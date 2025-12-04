@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GDGC Constellation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" xintegrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        
+        :root {
+        
+            --bg-primary: #0a0b10;
+            --bg-secondary: #161c27;
+            --text-primary: #e5e7eb;
+            --text-secondary: #a0aec0;
+            --card-bg: #1f2a37;
+            --accent-blue: #4285F4;
+            --border-color: #374151;
+            --shadow-color: rgba(66, 133, 244, 0.2);
+            --google-blue: #4285F4;
+            --google-red: #DB4437;
+            --google-yellow: #F4B400;
+            --google-green: #0F9D58;
+    
+        }
+
+        html[data-theme="light"] {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f3f4f6;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --card-bg: #ffffff;
+            --accent-blue: #4285F4;
+            --border-color: #e5e7eb;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        #splash-screen {
+            z-index: 1000;
+            transition: opacity 1s ease-in-out;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-primary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .spinner-container {
+            width: 100px;
+            height: 100px;
+            position: relative;
+            margin-bottom: 2rem;
+            transform: scale(1);
+            animation: zoom-out 3s ease-in-out forwards;
+        }
+        
+        .dot {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            position: absolute;
+            opacity: 0;
+            animation: 
+                orbit 2s infinite ease-in-out,
+                pulse 1s 0.2s infinite alternate,
+                fade-in 0.5s forwards;
+        }
+
+        .dot:nth-child(1) { top: 0; left: 0; background-color: #3b82f6; animation-delay: 0.0s; }
+        .dot:nth-child(2) { top: 0; right: 0; background-color: #f59e0b; animation-delay: 0.1s; }
+        .dot:nth-child(3) { bottom: 0; right: 0; background-color: #10b981; animation-delay: 0.2s; }
+        .dot:nth-child(4) { bottom: 0; left: 0; background-color: #ef4444; animation-delay: 0.3s; }
+
+        @keyframes orbit {
+            0% { transform: translate(0, 0); }
+            25% { transform: translate(85px, 0); }
+            50% { transform: translate(85px, 85px); }
+            75% { transform: translate(0, 85px); }
+            100% { transform: translate(0, 0); }
+        }
+
+        @keyframes pulse {
+            from { transform: scale(1); opacity: 0.8; }
+            to { transform: scale(1.3); opacity: 1; }
+        }
+
+        @keyframes fade-in {
+            to { opacity: 1; }
+        }
+
+        @keyframes zoom-out {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .member-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            box-shadow: 0 4px 10px var(--shadow-color);
+            transition: all 0.3s ease-in-out;
+            position: relative;
+            overflow: hidden;
+            display: flex; 
+            flex-direction: column;
+        }
+        
+        .member-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-blue);
+            box-shadow: 0 10px 30px var(--shadow-color);
+        }
+
+        .role-badge {
+            font-weight: 700;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+        }
+
+        .avatar-letter {
+            width: 64px;
+            height: 64px;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 600;
+            color: white;
+            line-height: 1;
+        }
+
+        .filter-control {
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        .multitext-heading span:nth-child(1) { color: var(--google-blue); } 
+        .multitext-heading span:nth-child(2) { color: var(--google-red); } 
+        .multitext-heading span:nth-child(3) { color: var(--google-yellow); } 
+        .multitext-heading span:nth-child(4) { color: var(--google-green); } 
+
+
+    </style>
+</head>
+<body>
+
+    <div id="splash-screen">
+        <div class="spinner-container">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
+        
+        <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-white mb-2">
+            GDGC Constellation
+        </h1>
+        <p class="text-xl font-light text-gray-400">
+            Connecting the Community.
+        </p>
+    </div>
+
+    <main id="main-content" class="p-6 md:p-12 opacity-0 transition-opacity duration-1000">
+        <div class="max-w-7xl mx-auto">
+
+            <button 
+                id="theme-toggle" 
+                onclick="toggleTheme()"
+                class="absolute top-4 right-4 p-3 rounded-full text-xl transition duration-300 shadow-lg"
+                style="background-color: var(--card-bg); color: var(--text-primary); border: 1px solid var(--border-color);"
+            >
+                <i id="theme-icon" class="fa-solid fa-sun"></i> 
+            </button>
+
+            <h1 class="text-3xl font-bold mb-6 multitext-heading">
+                <span>Welcome</span> <span>to</span> <span>The GDGC</span> <span>VIT BHOPAL</span>
+            </h1>
+            
+            <p class="text-lg mb-8" style="color: var(--text-secondary);">
+               GDGC Community Members 
+            </p>
+
+            <div class="mb-12 p-3 rounded-xl flex flex-col md:flex-row gap-3 filter-control">
+                <input 
+                    type="text" 
+                    id="search-input" 
+                    placeholder="Search name or bio..." 
+                    class="flex-grow p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 filter-control"
+                    oninput="filterMembers()"
+                />
+                <select 
+                    id="filter-role" 
+                    class="p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 filter-control"
+                    onchange="filterMembers()"
+                >
+                    <option value="">All Roles</option>
+                    <option value="Lead">Lead</option>
+                    <option value="Core Member">Core Member</option>
+                </select>
+                <select 
+                    id="filter-skill" 
+                    class="p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 filter-control"
+                    onchange="filterMembers()"
+                >
+                    <option value="">All Skills</option>
+                    <option value="Web Developer">Web Developer</option>
+                    <option value="Android">Android Developer</option>
+                    <option value="Blockchain">Blockchain</option>
+                    <option value="UX Design">UX Design</option>
+                    <option value="Backend">Backend</option>
+                </select>
+            </div>
+
+            <div id="member-grid" class="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const splashScreen = document.getElementById('splash-screen');
+        const mainContent = document.getElementById('main-content');
+        const DURATION_MS = 3000;
+        
+        const MOCK_MEMBERS = [
+            { id: 1, name: "Vaibhav", role: "Lead", skills: ["Web Developer","HTML", "Tailwind", "JS"], bio: "Frontend Architecture Lead. Focuses on scalable web design and component libraries.", color: "#4285F4" },
+            { id: 2, name: "Madhur", role: "Core Member", skills: ["Web Developer","HTML", "Tailwind", "CSS"], bio: "Tailwind CSS and responsive design expert. Dedicated to pixel-perfect cross-browser layouts.", color: "#4285F4" },
+            { id: 3, name: "Harsh", role: "Core Member", skills: ["Web Developer","HTML", "JavaScript", "Performance"], bio: "JavaScript performance optimization. Enjoys diving deep into browser rendering processes.", color: "#4285F4" },
+            { id: 4, name: "Piyush", role: "Core Member", skills: ["Web Developer","HTML", "Accessibility", "PWA"], bio: "Web accessibility and PWA development. Focused on inclusive and fast web experiences.", color: "#4285F4" },
+
+            { id: 5, name: "Rohit", role: "Lead", skills: ["Android",    "Compose", "Coroutines"], bio: "Android Compose and Kotlin Coroutines Lead. Manages high-performance mobile architectures.", color: "#DB4437" },
+            { id: 6, name: "Ayush", role: "Core Member", skills: ["Android", "Firebase", "Backend"], bio: "Firebase and back-end integration in mobile apps. Connects the dots between cloud and device.", color: "#DB4437" },
+            { id: 7, name: "Pritam", role: "Core Member", skills: ["Android", "UI/UX", "Design"], bio: "UI/UX implementation in Android. Ensures beautiful, modern, and smooth user interfaces.", color: "#DB4437" },
+            { id: 8, name: "Akhil", role: "Core Member", skills: ["Android", "Testing", "Debugging"], bio: "Testing and debugging complex Android applications. Focuses on maintainability and robustness.", color: "#DB4437" },
+            
+            { id: 9, name: "Gaurav", role: "Lead", skills: ["Blockchain","Solidity", "EVM", "Audit"], bio: "Smart Contract Audit and EVM development Lead. Dedicated to secure and efficient blockchain solutions.", color: "#F4B400" },
+            { id: 10, name: "Manan", role: "Core Member", skills: ["Blockchain","Solidity", "dApp", "Web3"], bio: "Decentralized application (dApp) development. Bridges the gap between frontend and smart contracts.", color: "#F4B400" },
+            { id: 11, name: "Aviral", role: "Core Member", skills: ["Blockchain","Solidity", "Layer 2", "Security"], bio: "Blockchain security and layer 2 solutions. Focuses on scaling and transaction efficiency.", color: "#F4B400" },
+            { id: 12, name: "Armaan", role: "Core Member", skills: ["Blockchain","Solidity", "ERC-20", "Tokens"], bio: "Token standards (ERC-20, ERC-721) implementation. Expertise in digital asset representation.", color: "#F4B400" },
+
+            { id: 13, name: "Navika", role: "Lead", skills: ["UX Design", "Research", "Figma"], bio: "User research and interface design Lead. Defines the user journey and visual direction.", color: "#0F9D58" },
+            { id: 14, name: "Mohit", role: "Core Member", skills: ["UX Design", "Prototyping", "Testing"], bio: "Prototyping and user testing. Turns concepts into testable, interactive models.", color: "#0F9D58" },
+            { id: 15, name: "Sachin", role: "Core Member", skills: ["UX Design", "Motion", "Branding"], bio: "Motion graphics and visual branding. Adds delightful animations and brand consistency.", color: "#0F9D58" },
+            { id: 16, name: "Vishal", role: "Core Member", skills: ["UX Design", "Design Systems", "Figma"], bio: "Design system creation and maintenance. Ensures consistency across all products.", color: "#0F9D58" },
+
+            { id: 17, name: "Vivan", role: "Lead", skills: ["Backend","Go", "Microservices", "APIs"], bio: "High-performance Go microservices Lead. Designs scalable, concurrent backend systems.", color: "#7E57C2" },
+            { id: 18, name: "Abhishek", role: "Core Member", skills: ["Backend","Go", "Cloud", "Deployment"], bio: "Cloud deployments and API development. Focuses on reliable and resilient deployment pipelines.", color: "#7E57C2" },
+            { id: 19, name: "Arijit", role: "Core Member", skills: ["Backend","Go", "Database", "NoSQL"], bio: "Database architecture (Postgres/NoSQL). Optimizes data storage and retrieval patterns.", color: "#7E57C2" },
+            { id: 20, name: "Ram", role: "Core Member", skills: ["Backend","Go", "Monitoring", "Logging"], bio: "System monitoring and logging integration. Ensures operational health and performance tracking.", color: "#7E57C2" },
+        ];
+
+
+        function createMemberCard(member) {
+            const avatarLetter = member.name.charAt(0).toUpperCase();
+
+            const roleColor = member.role === 'Lead' ? 'text-yellow-400' : 'text-blue-400';
+            const skillChips = member.skills.map(skill => 
+                `<span class="text-xs font-semibold px-2 py-0.5 rounded-full text-white" style="background-color: ${member.color}; opacity: 0.8;">${skill}</span>`
+            ).join('');
+
+            return `
+                <div class="member-card p-6 flex flex-col items-start space-y-4">
+                    <div class="flex items-center space-x-4 w-full">
+                        <div class="avatar-letter ring-2 ring-offset-2" 
+                             style="background-color: ${member.color}; --tw-ring-color: ${member.color}; ring-offset-color: var(--bg-primary);">
+                             ${avatarLetter}
+                        </div>
+                        
+                        <div class="flex-grow">
+                            <h3 class="text-xl font-bold">${member.name}</h3>
+                            <span class="role-badge ${roleColor}" style="background-color: ${member.color}20; color: ${member.color};">${member.role}</span>
+                        </div>
+                    </div>
+                    
+                    <p class="text-sm flex-grow" style="color: var(--text-secondary);">${member.bio}</p>
+                    
+                    <div class="flex flex-wrap gap-2 pt-3 border-t w-full" style="border-color: var(--border-color);">
+                        ${skillChips}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderMemberGrid(members) {
+            const memberGrid = document.getElementById('member-grid');
+            if (members.length === 0) {
+                 memberGrid.innerHTML = `
+                    <p class="text-xl text-center col-span-full py-12" style="color: var(--text-secondary);">
+                        No members found matching your criteria.
+                    </p>
+                `;
+                return;
+            }
+            memberGrid.innerHTML = members.map(createMemberCard).join('');
+        }
+
+        window.filterMembers = function() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            const roleFilter = document.getElementById('filter-role').value;
+            const skillFilter = document.getElementById('filter-skill').value;
+
+            const filteredMembers = MOCK_MEMBERS.filter(member => {
+                const matchesSearch = member.name.toLowerCase().includes(searchTerm) || member.bio.toLowerCase().includes(searchTerm);
+                
+                const matchesRole = !roleFilter || member.role === roleFilter;
+                
+                const matchesSkill = !skillFilter || member.skills.includes(skillFilter);
+
+                return matchesSearch && matchesRole && matchesSkill;
+            });
+
+            renderMemberGrid(filteredMembers);
+        }
+
+        function setIcon(theme) {
+            const icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.className = theme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+            }
+        }
+
+        window.toggleTheme = function() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            setIcon(newTheme);
+        }
+
+        function applyThemeOnLoad() {
+            const savedTheme = localStorage.getItem('theme');
+            const html = document.documentElement;
+            
+            if (savedTheme) {
+                html.setAttribute('data-theme', savedTheme);
+            } else {
+                html.setAttribute('data-theme', 'dark');
+            }
+            setIcon(html.getAttribute('data-theme'));
+        }
+
+        function hideSplashScreen() {
+            splashScreen.style.opacity = '0';
+
+            setTimeout(() => {
+                splashScreen.style.display = 'none';
+                
+                mainContent.style.opacity = '1';
+                mainContent.style.transition = 'opacity 1s ease-in-out';
+                filterMembers();
+            }, 1000);
+        }
+
+        window.onload = function() {
+            applyThemeOnLoad();
+            setTimeout(hideSplashScreen, DURATION_MS);
+        }
+
+        async function fetchWithRetry(url, options, retries = 3) {
+            for (let i = 0; i < retries; i++) {
+                try {
+                    const response = await fetch(url, options);
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    return response;
+                } catch (error) {
+                    if (i === retries - 1) throw error;
+                    const delay = Math.pow(2, i) * 1000;
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                }
+            }
+        }
+    </script>
+
+</body>
+</html>
+ 
